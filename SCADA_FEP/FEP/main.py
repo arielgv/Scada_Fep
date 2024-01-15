@@ -22,7 +22,7 @@
 #  
 # ipdaddress  17      mapping:  192.168.32.16   (create only one record)
 
-# In[19]:
+# In[1]:
 
 
 import pandas as pd
@@ -30,7 +30,7 @@ from datetime import datetime
 #libraries
 
 
-# In[20]:
+# In[2]:
 
 
 data = {
@@ -47,7 +47,7 @@ FEP = pd.DataFrame(data)
 print('Preview \n',FEP)
 
 
-# In[21]:
+# In[3]:
 
 
 with open('FEP.DAT', 'w') as file:
@@ -104,7 +104,7 @@ with open('FEP.DAT', 'w') as file:
 
 # _Comm.csv_ Should be in the same folder
 
-# In[22]:
+# In[4]:
 
 
 rtac_data = pd.read_csv('RTAC SCADA DNP IPs Reordered (1).csv')
@@ -136,7 +136,7 @@ channel['ChannelConnTimeout'] = [5] * len(rtac_data)
 
 
 
-# In[23]:
+# In[5]:
 
 
 channel
@@ -146,7 +146,7 @@ channel
 
 # SE LE INCORPORA UNA COLUMNA CON VALORES '1' A CONTINUACION DE LA COLUMNA INDICE
 
-# In[24]:
+# In[6]:
 
 
 #line_number = 1
@@ -199,13 +199,13 @@ with open("CHANNEL.dat", 'w') as f:
 
 # RTU.csv should be in the same folder
 
-# In[25]:
+# In[7]:
 
 
 rtu_data = pd.read_csv('RTAC SCADA DNP IPs Reordered (1).csv')
 
 
-# In[26]:
+# In[8]:
 
 
 df = pd.DataFrame()
@@ -223,7 +223,7 @@ df['Address'] = [1] * len(rtu_data)
 df['SubType'] = [2] * len(rtu_data)
 
 
-# In[27]:
+# In[9]:
 
 
 df
@@ -233,7 +233,7 @@ df
 
 # Se incorpora una columna de '1s' siguiente al indice . 
 
-# In[28]:
+# In[10]:
 
 
 with open("RTU_DATA.dat", 'w') as f:
@@ -293,7 +293,7 @@ with open("RTU_DATA.dat", 'w') as f:
 # 
 # 
 
-# In[29]:
+# In[11]:
 
 
 rtac_data = pd.read_csv('RTAC SCADA DNP IPs Reordered (1).csv')
@@ -321,7 +321,7 @@ channel_group['pAORGroup'] = [1] * len(rtac_data)
 channel_group['Type'] = [5] * len(rtac_data)
 
 
-# In[30]:
+# In[12]:
 
 
 channel_group
@@ -329,18 +329,18 @@ channel_group
 
 # Columna siguiente a Indice agregada: 1s. Valores unicamente int 1
 
-# In[31]:
+# In[13]:
 
 
 with open("CHANNEL_GROUP.dat", 'w') as f:
     f.write('* \n')
-    f.write('\t22\tCHANNEL_GROUP\t0\t20\t3,3\t3,8\t3,9\t4\t6\t8,0\t20\t23\t24\n')
-    f.write('*\tIndic\t1s\tProtocol\tName\tpCHANNEL\tBackupMonDisable\tpAORGroup\tType\n')
+    f.write('\t22\tCHANNEL_GROUP\t0\t3,3\t3,8\t3,9\t4\t6\t8,0\t20\t23\t24\n')
+    f.write('*\tIndic\t1s\tMaxAPDU\tConnectionType\tAPDU\tProtocol\tName\tpCHANNEL\tBackupMonDisable\tpAORGroup\tType\n')
 
     #line_number = 1  # Inicializar la variable del número de línea
 
     for index, row in channel_group.iterrows():
-        f.write("\t{}\t{}\t{}\t{}\t{}\t{}\t\"{}\"\t{}\t{}\t{}\n".format(
+        f.write("\t{}\t{}\t{}\t{}\t{}\t{}\t\"{}\"\t{}\t{}\t{}\t{}\n".format(
                 row['Indic'],row['BackupMonDisable'],row['MaxAPDU'],row['ConnectionType'],row['APDU'], row['Protocol'], 
                 row['Name'], row['pCHANNEL'], row['BackupMonDisable'],row['pAORGroup'] ,row['Type']))
         #line_number += 1  # Incrementar el número de línea
@@ -373,14 +373,14 @@ with open("CHANNEL_GROUP.dat", 'w') as f:
 # 
 # 
 
-# In[32]:
+# In[14]:
 
 
 rtu_data = pd.read_csv('RTAC SCADA DNP IPs Reordered (1).csv')
 rtu_defn = pd.DataFrame()
 
 
-# In[33]:
+# In[15]:
 
 
 rtu_defn['Indics'] = range(1, len(rtu_data) + 1)
@@ -392,13 +392,13 @@ rtu_defn['Start31'] = [1] * len(rtu_data)
 rtu_defn['Count41'] = [5] * len(rtu_data)
 
 
-# In[34]:
+# In[16]:
 
 
 rtu_defn
 
 
-# In[35]:
+# In[17]:
 
 
 with open("RTU_DEFN.dat", 'w') as f:
@@ -435,7 +435,7 @@ with open("RTU_DEFN.dat", 'w') as f:
 # 
 # 
 
-# In[36]:
+# In[18]:
 
 
 rtac_data = pd.read_csv('RTAC SCADA DNP IPs Reordered (1).csv')
@@ -451,13 +451,13 @@ channel_group_defn['MaxApdu'] = [23] * len(rtac_data)
 channel_group_defn['MasterAddr'] = [1024] * len(rtac_data)
 
 
-# In[37]:
+# In[19]:
 
 
 with open("CHANNEL_GROUP_DEFN.dat", 'w') as f:
     f.write('* \n')
-    f.write('\t36\tCHANNEL_GROUP\t0\t3,8\t12\n')
-    f.write('*\tIndic\ConnectionType\t\tMasterAddr\n')
+    f.write('\t36\tCHANNEL_GROUP_DEFN\t0\t12\n')
+    f.write('*\tIndic\t1s\tMasterAddr\n')
 
     for index, row in channel_group_defn.iterrows():
         f.write("\t{}\t{}\t{}\n".format(

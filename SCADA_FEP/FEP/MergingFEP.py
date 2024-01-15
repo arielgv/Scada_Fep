@@ -12,7 +12,6 @@ import os
 
 
 file_names = [
-    'FEP.dat',
     'CHANNEL.dat',
     'RTU_DATA.dat',
     'CHANNEL_GROUP.dat',
@@ -34,7 +33,7 @@ compiled_content = '32 FEP.DB\n' + compiled_content
 compiled_content += '0'
 
 
-final_file_name = 'FEP_Compiled_5-Jan.dat'
+final_file_name = 'FEP_Compiled_15-Jan.dat'
 with open(final_file_name, 'w') as final_file:
     final_file.write(compiled_content)
 
