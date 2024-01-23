@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[257]:
+# In[475]:
 
 
 import pandas as pd
@@ -26,14 +26,14 @@ import numpy as np
 
 # The .str.rstrip() method is widely used since many fields (almost all of them) have their value ending with two blank spaces.
 
-# In[258]:
+# In[476]:
 
 
 #Input Filename (default = Station.csv)
 InputStationFile = "Station.csv"
 
 
-# In[259]:
+# In[477]:
 
 
 df = pd.read_csv(InputStationFile, skipinitialspace=True)
@@ -53,7 +53,7 @@ df_station = df_output
 print(df_station)
 
 
-# In[260]:
+# In[478]:
 
 
 # Crear un diccionario que mapee los valores actuales a los valores de reemplazo
@@ -79,7 +79,7 @@ replacement_dict = {
 df_station['AOR'] = df_station['AOR'].replace(replacement_dict)
 
 
-# In[261]:
+# In[479]:
 
 
 df_station
@@ -87,7 +87,7 @@ df_station
 
 # # Select Output name: (default: station_dat.dat)
 
-# In[262]:
+# In[480]:
 
 
 folder_name = "SCADA_DAT_FILES"
@@ -132,67 +132,67 @@ with open('Station.dat', 'w') as f:
 # 	2	"DRD"
 # 	3	"35C109"  
 
-# In[263]:
+# In[481]:
 
 
 df_device_instance = pd.read_csv('Status.csv')
 
 
-# In[264]:
+# In[482]:
 
 
 df_device_instance = df_device_instance[['Name  ']]
 
 
-# In[265]:
+# In[483]:
 
 
 df_device_instance['Name  '] = df_device_instance['Name  '].str.split(',', expand=True)[1].str.strip()
 
 
-# In[266]:
+# In[484]:
 
 
 df_device_instance
 
 
-# In[267]:
+# In[485]:
 
 
 df_device_instance = df_device_instance.drop_duplicates()
 
 
-# In[268]:
+# In[486]:
 
 
 df_device_instance
 
 
-# In[269]:
+# In[487]:
 
 
 df_device_instance['Number'] = range(1,len(df_device_instance)+1)
 
 
-# In[270]:
+# In[488]:
 
 
 df_device_instance = df_device_instance[['Number', 'Name  ']]
 
 
-# In[271]:
+# In[489]:
 
 
 df_device_instance
 
 
-# In[272]:
+# In[490]:
 
 
 device_inst_filename = os.path.join(folder_name, "device_instance_dat.dat")
 
 
-# In[273]:
+# In[491]:
 
 
 with open(device_inst_filename, 'w') as f:
@@ -206,7 +206,7 @@ with open(device_inst_filename, 'w') as f:
     f.write("0")
 
 
-# In[274]:
+# In[492]:
 
 
 df_analog_instance = pd.read_csv('Analog.csv')
@@ -220,13 +220,13 @@ df_analog_instance['Name  '] = df_analog_instance['Name  '].apply(lambda x: x.sp
 df_analog_instance = df_analog_instance.drop_duplicates()
 
 
-# In[275]:
+# In[493]:
 
 
 df_analog_instance
 
 
-# In[276]:
+# In[494]:
 
 
 # Concatenar los DataFrames df_device_instance y df_analog_instance
@@ -237,37 +237,37 @@ result_df.drop_duplicates(subset='Name  ', inplace=True, keep='first')
 print(result_df)
 
 
-# In[277]:
+# In[495]:
 
 
 result_df
 
 
-# In[278]:
+# In[496]:
 
 
 df_device_instance = result_df
 
 
-# In[279]:
+# In[497]:
 
 
 df_device_instance['Number'] = range(1,len(df_device_instance)+1)
 
 
-# In[280]:
+# In[498]:
 
 
 df_device_instance
 
 
-# In[281]:
+# In[499]:
 
 
 device_inst_filename = os.path.join(folder_name, "device_instance_dat.dat")
 
 
-# In[282]:
+# In[500]:
 
 
 with open(device_inst_filename, 'w') as f:
@@ -344,6 +344,7 @@ with open(device_inst_filename, 'w') as f:
 # (29) AlarmGroup: Will be set to 1 unless defined in mapping document
 # 
 # (41) ICAddress : Refer to documentation. This script leaves it in blank
+#   **update 01/22 : ICAddress . double quotations "" 
 # 
 # * ***UPDATE : 
 # (107) pDeviceInstance : Column "Name" in Status.csv . Get the string after the comma, then search for the matching record of the objet DEVICE_INSTANCE. 
@@ -352,14 +353,14 @@ with open(device_inst_filename, 'w') as f:
 # TYPE update
 # RG 1/18: If (Open_A is.notEmpty && Close_A is.NotEmpty) then (T_I&C) Type =2
 
-# In[283]:
+# In[501]:
 
 
 #Input filename(default: "Status.csv")
 InputStatusFile = "Status.csv"
 
 
-# In[284]:
+# In[502]:
 
 
 status_df = pd.read_csv(InputStatusFile)
@@ -372,7 +373,7 @@ df_status = pd.DataFrame()
 
 
 
-# In[285]:
+# In[503]:
 
 
 df_status['record'] = range(1, len(status_df)+1) 
@@ -404,7 +405,7 @@ df_status['AOR'] = df_status['AOR'].str.replace(r'\s+', '', regex=True)
 df_status['pState'] = status_df['PreSuffx  ']
 df_status['Norm'] = status_df['Normal_State  ']
 df_status['AlarmGroup'] = 1
-df_status['ICAddress'] = 0
+df_status['ICAddress'] = '""'
 
 
 # In[ ]:
@@ -413,13 +414,13 @@ df_status['ICAddress'] = 0
 
 
 
-# In[286]:
+# In[504]:
 
 
 df_status['Type'].value_counts()
 
 
-# In[287]:
+# In[505]:
 
 
 replacement_dict = {
@@ -445,13 +446,13 @@ replacement_dict = {
 df_status['AOR'] = df_status['AOR'].replace(replacement_dict)
 
 
-# In[288]:
+# In[506]:
 
 
 df_status
 
 
-# In[289]:
+# In[507]:
 
 
 status_df
@@ -463,7 +464,7 @@ status_df
 
 
 
-# In[290]:
+# In[508]:
 
 
 #df_status['TempName'] = status_df['Name  '].str[3:]
@@ -491,7 +492,7 @@ print(df_status)
 # This code strips the Name column in status and search the matching row Key in Station Dataframe
 # then, it reads the Order column value and assign this to the Stn column
 
-# In[291]:
+# In[509]:
 
 
 status_df['Key'] = status_df['Name  '].str.split(',').str[0].str.strip()  # make sure no blank spaces are in the begin & end of the name
@@ -499,7 +500,7 @@ df_station['Key'] = df_station['Key'].str.replace('"', '')
 stn_values = []  #list for store stn values
 
 
-# In[292]:
+# In[510]:
 
 
 status_df['Key'] = status_df['Name  '].str.split(',').str[0].str.strip()
@@ -535,20 +536,20 @@ for i in range(len(status_df)):
 df_status['Stn'] = stn_values
 
 
-# In[293]:
+# In[511]:
 
 
 count_054 = df_status['Stn'].value_counts().get('055', 0)
 print(f"El conteo de '055' (PS) en la columna 'Stn' es: {count_054}")
 
 
-# In[294]:
+# In[512]:
 
 
 df_status['Stn'].value_counts()
 
 
-# In[295]:
+# In[513]:
 
 
 df_status.head(20)
@@ -557,7 +558,7 @@ df_status.head(20)
 # Replacement case: Pseudo Points.
 # IF stn = 054 (PS. Pseudo points.) Set type to 8 .   And then set XX Value to 12
 
-# In[296]:
+# In[514]:
 
 
 df_status.loc[df_status['Name'].str.startswith("PS"), 'Type'] = 8
@@ -576,20 +577,20 @@ for i in range(len(df_status)):
 
 # # KEY
 
-# In[297]:
+# In[515]:
 
 
 key_values = []
 xx_yyy_counters = {}  # creating a dict to store and count every YYY. It's used for a incremental ZZZ
 
 
-# In[298]:
+# In[516]:
 
 
 df_status['Type'].value_counts()
 
 
-# In[299]:
+# In[517]:
 
 
 for i in range(len(df_status)):
@@ -626,13 +627,13 @@ for i in range(len(df_status)):
     key_values.append(xx + yyy + zz)
 
 
-# In[300]:
+# In[518]:
 
 
 df_status['Key'] = key_values
 
 
-# In[301]:
+# In[519]:
 
 
 #obtaining and showing the counting of Types.
@@ -640,51 +641,51 @@ type_counts = df_status['Type'].value_counts()
 print(type_counts)
 
 
-# In[302]:
+# In[520]:
 
 
 df_status
 
 
-# In[303]:
+# In[521]:
 
 
 new_order = ['record', 'OrderNo','Type','Key','Name','Stn','AOR','pState','Norm','AlarmGroup','ICAddress','pDeviceInstance']
 df_status = df_status[new_order]
 
 
-# In[304]:
+# In[522]:
 
 
 df_status
 
 
-# In[305]:
+# In[523]:
 
 
 df_status['Key'] = '"'+ df_status['Key'].str.rstrip() + '"'
 
 
-# In[306]:
+# In[524]:
 
 
 df_status['Name'] = '"'+ df_status['Name'].str.rstrip() + '"'
 
 
-# In[307]:
+# In[525]:
 
 
 df_status
 
 
-# In[308]:
+# In[526]:
 
 
 df_status['pState'] = df_status['pState'].astype(int)
 df_status['pState'] = df_status['pState'] + 201
 
 
-# In[309]:
+# In[527]:
 
 
 df_status
@@ -694,13 +695,13 @@ df_status
 
 # # OUTPUT TO DAT FILE :
 
-# In[310]:
+# In[528]:
 
 
 output_status_name = 'Status99.dat'
 
 
-# In[311]:
+# In[529]:
 
 
 with open(output_status_name, 'w') as f:
@@ -810,7 +811,7 @@ with open(output_status_name, 'w') as f:
 #     
 #    
 
-# In[312]:
+# In[530]:
 
 
 #Data CSV Name entry
@@ -836,7 +837,7 @@ analog_file = "Analog.csv"
 # 
 # 
 
-# In[313]:
+# In[531]:
 
 
 df_analog = pd.read_csv(analog_file)
@@ -876,7 +877,7 @@ print(f"'Type' = 3: {count_type_3}")
 
 # HI LOW LIMITS
 
-# In[314]:
+# In[532]:
 
 
 for col in ['77,0', '77,1', '77,2', '77,3', '77,4', '78,0', '78,1', '78,2', '78,3', '78,4']:
@@ -950,20 +951,20 @@ df_new.loc[mask4, '78,4'] = -999999
 df_new.loc[mask4, ['77,1', '77,2', '78,1', '78,2']] = 0
 
 
-# In[315]:
+# In[533]:
 
 
 df_new
 
 
-# In[316]:
+# In[534]:
 
 
 #df_analog['EU_Hi  '] = df_analog['EU_Hi  '].apply(keep_decimal_precision)
 df_new['pScale EU_Hi'] = df_analog['EU_Hi  ']
 
 
-# In[317]:
+# In[535]:
 
 
 df_new
@@ -971,7 +972,7 @@ df_new
 
 # # STN 
 
-# In[318]:
+# In[536]:
 
 
 df_analog['Key'] = df_analog['Name  '].str.split(',').str[0].str.strip()
@@ -989,7 +990,7 @@ for i in range(len(df_analog)):
 df_new['Stn'] = stn_values
 
 
-# In[319]:
+# In[537]:
 
 
 df_new
@@ -997,7 +998,7 @@ df_new
 
 # # KEY
 
-# In[320]:
+# In[538]:
 
 
 cols = ['Alm_unrHi', 'Alm_unrLo', 'Alm_preHi', 'Alm_preLo', '78,1', '78,4', '77,1', '77,4']
@@ -1007,14 +1008,14 @@ for col in cols:
 
 
 
-# In[321]:
+# In[539]:
 
 
 key_values = []
 xx_yyy_counters = {}
 
 
-# In[322]:
+# In[540]:
 
 
 for i in range(len(df_new)):
@@ -1044,13 +1045,13 @@ for i in range(len(df_new)):
 df_new['Key'] = key_values
 
 
-# In[323]:
+# In[541]:
 
 
 df_new
 
 
-# In[324]:
+# In[542]:
 
 
 #df_new = df_new[['record', 'OrderNo','Type', 'Key', 'Name', 'Stn', 'AOR', 'Nominal_HiLim', 'Nominal_HiLim1', 'Nominal_LoLim', 'Nominal_LoLim1', 'pScale EU_Hi', 'AlarmGrp']].copy()
@@ -1059,7 +1060,7 @@ df_new
 
 # df_ner['NominalPairInactive'] 
 
-# In[325]:
+# In[543]:
 
 
 new_column_order = ['record', 'OrderNo', 'Type', 'Key', 'Name', 'Stn', 'AOR',
@@ -1073,20 +1074,20 @@ df_new = df_new[new_column_order]
 
 
 
-# In[326]:
+# In[544]:
 
 
 df_new['77,1'].head(10)
 
 
-# In[327]:
+# In[545]:
 
 
 df_new['Key'] = '"'+ df_new['Key'].str.rstrip() + '"'
 df_new['Name'] = '"'+ df_new['Name'].str.rstrip() + '"'
 
 
-# In[328]:
+# In[546]:
 
 
 df_new.loc[df_new['77,4'] == 0, '77,4'] = 999999
@@ -1108,7 +1109,7 @@ df_new.loc[df_new['78,4'] == 0, '78,4'] = -999999
 df_new.loc[df_new['78,4'] == '  ', '78,4'] = -999999
 
 
-# In[329]:
+# In[547]:
 
 
 borrador = """df_new['77,4'] = df_new['77,4'].replace({0: 999999, '  ': 999999})
@@ -1119,13 +1120,13 @@ df_new['78,1'] = df_new['78,1'].replace({0: -999996, '  ': -999996})
 df_new['78,4'] = df_new['78,4'].replace({0: -999999, '  ': -999999})"""
 
 
-# In[330]:
+# In[548]:
 
 
 #df_analog['Alm_preLo  '].to_csv('borrrrar.csv')
 
 
-# In[331]:
+# In[549]:
 
 
 df_analog['Alm_preLo  '] = df_analog['Alm_preLo  '].astype(str).str.strip()
@@ -1140,19 +1141,19 @@ df_new.loc[mask, '78,0'] = df_analog.loc[mask, 'Alm_preLo  ']
 
 
 
-# In[332]:
+# In[550]:
 
 
 df_new.head(10)
 
 
-# In[333]:
+# In[551]:
 
 
 df_new['AOR'] = df_new['AOR'].str.replace(r'\s+', '', regex=True)
 
 
-# In[334]:
+# In[552]:
 
 
 # Crear un diccionario que mapee los valores actuales a los valores de reemplazo
@@ -1179,14 +1180,14 @@ replacement_dict = {
 df_new['AOR'] = df_new['AOR'].replace(replacement_dict)
 
 
-# In[335]:
+# In[553]:
 
 
 df_new['78,1'] = df_new['78,1'].replace({'0  ': -999996})
 df_new['78,4'] = df_new['78,4'].replace({'0  ': -999999})
 
 
-# In[336]:
+# In[554]:
 
 
 def modificar_type(fila):
@@ -1197,13 +1198,13 @@ def modificar_type(fila):
 df_new['Type'] = df_new.apply(modificar_type, axis=1)
 
 
-# In[337]:
+# In[555]:
 
 
 #df_new.to_csv('borrardf_new.csv', index=False)
 
 
-# In[338]:
+# In[556]:
 
 
 filas_con_ps = df_new[df_new['Name'].str.startswith('"PS')]
@@ -1216,7 +1217,7 @@ print("Número de filas que comienzan con 'PS':", numero_de_filas)
 
 # df_new [punit]
 
-# In[339]:
+# In[557]:
 
 
 analog_file = "Analog.csv"
@@ -1236,13 +1237,13 @@ df_new['pUNIT'] = df_analog['EuText  '].map(unit_mapping)
 df_new['pUNIT'] = df_new['pUNIT'].apply(lambda x: '""' if pd.isna(x) else str(int(x)))
 
 
-# In[340]:
+# In[558]:
 
 
 df_new['pUNIT'].isna().sum()
 
 
-# In[341]:
+# In[559]:
 
 
 empty_vals = df_new['pUNIT'].isna() | (df_new['pUNIT'] == '""')
@@ -1250,26 +1251,26 @@ num_empty = empty_vals.sum()
 print(f'Number of empty values: {num_empty}')
 
 
-# In[342]:
+# In[560]:
 
 
 df_new['pUNIT'].head(6)
 
 
-# In[343]:
+# In[561]:
 
 
 #import csv 
 #df_new.to_csv('deletethis.csv', escapechar='\\' ,quoting=csv.QUOTE_NONE)
 
 
-# In[344]:
+# In[562]:
 
 
 df_new.loc[:, 'RawCountFormat'] = 5
 
 
-# In[345]:
+# In[563]:
 
 
 df_new
@@ -1277,13 +1278,13 @@ df_new
 
 # Output Filename:
 
-# In[346]:
+# In[564]:
 
 
 output_analog_name = 'Analog99.dat'
 
 
-# In[347]:
+# In[565]:
 
 
 with open(output_analog_name, 'w') as f:
@@ -1305,7 +1306,7 @@ with open(output_analog_name, 'w') as f:
 
 # vamos a crear un dataframe llamado Analog_config , el cual tendrá solo dos columnas, una columna se llamara Key , cuyo contenido será exactamente el contenido de Key del df  llamado df_new . y una columna se llamara name , que vendra de df_analog['Name  '] 
 
-# In[348]:
+# In[566]:
 
 
 Analog_config = pd.DataFrame({
@@ -1331,68 +1332,68 @@ Analog_config['pDeviceInstance'] = Analog_config['name'].apply(find_number)
 # Ahora, Analog_config contendrá la columna 'pDeviceInstance' con los números correspondientes.
 
 
-# In[349]:
+# In[567]:
 
 
 Analog_config
 
 
-# In[350]:
+# In[568]:
 
 
 df_device_instance
 
 
-# In[351]:
+# In[569]:
 
 
 print(set(Analog_config['name']).intersection(set(df_device_instance['Name  '])))
 
 
-# In[352]:
+# In[570]:
 
 
 print("Unique names in Analog_config:", Analog_config['name'].unique()[:10])  # muestra los primeros 10
 print("Unique names in df_device_instance:", df_device_instance['Name  '].unique()[:10])  # muestra los primeros 10
 
 
-# In[353]:
+# In[571]:
 
 
 df_device_instance
 
 
-# In[354]:
+# In[572]:
 
 
 Analog_config
 
 
-# In[355]:
+# In[573]:
 
 
 # HABILITAR ESTO Analog_config.drop('name', axis=1, inplace = True )
 
 
-# In[356]:
+# In[574]:
 
 
 Analog_config['record'] = range(1, len(Analog_config) + 1)
 
 
-# In[357]:
+# In[575]:
 
 
 Analog_config
 
 
-# In[358]:
+# In[576]:
 
 
 Analog_config.to_csv('AnalogConfig.csv', index=False)
 
 
-# In[359]:
+# In[577]:
 
 
 with open('ANALOG_CONFIG.dat', 'w') as f:
@@ -1421,7 +1422,7 @@ with open('ANALOG_CONFIG.dat', 'w') as f:
 # 
 # 
 
-# In[360]:
+# In[578]:
 
 
 analog_file = "Analog.csv"
@@ -1439,7 +1440,7 @@ print(df_unit.head())
 
 
 
-# In[361]:
+# In[579]:
 
 
 with open('Unit.dat', 'w') as f:
@@ -1474,7 +1475,7 @@ with open('Unit.dat', 'w') as f:
 # 
 # pALARM_GROUP (42) = Will be set to 1 unless defined in mapping document
 
-# In[362]:
+# In[580]:
 
 
 comment = """ #Data CSV Name entry
@@ -1491,7 +1492,7 @@ df_accumulator['pAORGroup'] = 1
 """
 
 
-# In[363]:
+# In[581]:
 
 
 comment = """
@@ -1505,7 +1506,7 @@ df_accumulator['pALARM_GROUP'] = 1
 """
 
 
-# In[364]:
+# In[582]:
 
 
 comment = """
