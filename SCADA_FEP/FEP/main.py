@@ -22,7 +22,7 @@
 #  
 # ipdaddress  17      mapping:  192.168.32.16   (create only one record)
 
-# In[1]:
+# In[3]:
 
 
 import pandas as pd
@@ -30,7 +30,7 @@ from datetime import datetime
 #libraries
 
 
-# In[2]:
+# In[4]:
 
 
 data = {
@@ -47,7 +47,7 @@ FEP = pd.DataFrame(data)
 print('Preview \n',FEP)
 
 
-# In[3]:
+# In[5]:
 
 
 with open('FEP.DAT', 'w') as file:
@@ -104,7 +104,7 @@ with open('FEP.DAT', 'w') as file:
 
 # _Comm.csv_ Should be in the same folder
 
-# In[4]:
+# In[6]:
 
 
 rtac_data = pd.read_csv('RTAC SCADA DNP IPs Reordered (1).csv')
@@ -136,7 +136,7 @@ channel['ChannelConnTimeout'] = [5] * len(rtac_data)
 
 
 
-# In[5]:
+# In[7]:
 
 
 channel
@@ -146,7 +146,7 @@ channel
 
 # SE LE INCORPORA UNA COLUMNA CON VALORES '1' A CONTINUACION DE LA COLUMNA INDICE
 
-# In[6]:
+# In[8]:
 
 
 #line_number = 1
@@ -199,13 +199,13 @@ with open("CHANNEL.dat", 'w') as f:
 
 # RTU.csv should be in the same folder
 
-# In[7]:
+# In[9]:
 
 
 rtu_data = pd.read_csv('RTAC SCADA DNP IPs Reordered (1).csv')
 
 
-# In[8]:
+# In[10]:
 
 
 df = pd.DataFrame()
@@ -223,7 +223,7 @@ df['Address'] = [1] * len(rtu_data)
 df['SubType'] = [2] * len(rtu_data)
 
 
-# In[9]:
+# In[11]:
 
 
 df
@@ -233,7 +233,7 @@ df
 
 # Se incorpora una columna de '1s' siguiente al indice . 
 
-# In[10]:
+# In[12]:
 
 
 with open("RTU_DATA.dat", 'w') as f:
@@ -293,7 +293,7 @@ with open("RTU_DATA.dat", 'w') as f:
 # 
 # 
 
-# In[11]:
+# In[13]:
 
 
 rtac_data = pd.read_csv('RTAC SCADA DNP IPs Reordered (1).csv')
@@ -321,7 +321,7 @@ channel_group['pAORGroup'] = [1] * len(rtac_data)
 channel_group['Type'] = [5] * len(rtac_data)
 
 
-# In[12]:
+# In[14]:
 
 
 channel_group
@@ -329,7 +329,7 @@ channel_group
 
 # Columna siguiente a Indice agregada: 1s. Valores unicamente int 1
 
-# In[13]:
+# In[15]:
 
 
 with open("CHANNEL_GROUP.dat", 'w') as f:
@@ -373,14 +373,14 @@ with open("CHANNEL_GROUP.dat", 'w') as f:
 # 
 # 
 
-# In[14]:
+# In[16]:
 
 
 rtu_data = pd.read_csv('RTAC SCADA DNP IPs Reordered (1).csv')
 rtu_defn = pd.DataFrame()
 
 
-# In[15]:
+# In[17]:
 
 
 rtu_defn['Indics'] = range(1, len(rtu_data) + 1)
@@ -392,13 +392,13 @@ rtu_defn['Start31'] = [1] * len(rtu_data)
 rtu_defn['Count41'] = [5] * len(rtu_data)
 
 
-# In[16]:
+# In[18]:
 
 
 rtu_defn
 
 
-# In[17]:
+# In[19]:
 
 
 with open("RTU_DEFN.dat", 'w') as f:
@@ -435,7 +435,7 @@ with open("RTU_DEFN.dat", 'w') as f:
 # 
 # 
 
-# In[18]:
+# In[20]:
 
 
 rtac_data = pd.read_csv('RTAC SCADA DNP IPs Reordered (1).csv')
@@ -451,7 +451,7 @@ channel_group_defn['MaxApdu'] = [23] * len(rtac_data)
 channel_group_defn['MasterAddr'] = [1024] * len(rtac_data)
 
 
-# In[19]:
+# In[21]:
 
 
 with open("CHANNEL_GROUP_DEFN.dat", 'w') as f:
@@ -467,8 +467,117 @@ with open("CHANNEL_GROUP_DEFN.dat", 'w') as f:
     f.write(" 0") 
 
 
-# In[ ]:
+# _________________
+
+# # RTU CONTROL
+
+# dependencies : Equivalency_station.csv
+# 
+# 1  =  KeySCADA: 
+# 
+# RG 2/11: If ( Point Type == RELAY) then merge column Name+ ',' + Description , and then search for it in the output file SCADA.dat object Status. Grab the key of the matching record
+# 
+# Create for every Status = Types 2,3,6,7 and Setpoint = Type 1
+# 
+# 
+# 
+# 2  =  control_type:  Field: "IP
+# DNP Point #"
+# 
+# RG 2/11: If there are two records with same IP and same DNP Point # then create two records both with same KeySCADA, the first one will have control_type equal to 4, and the second equal to 5. 
+# If there is only one record with unique IP and unique DNP Point # then create one record and control_type equal 6.
+# 
+# 
+# 
+# 
+# 4  =  point_address: Field : "DNP Point #"
+# 
+# "RG 2/11:  If there are two records with same IP and same DNP Point # then use DNP Point # on each of the two records, 
+# If there is only one record with unique IP and unique DNP Point # then use  DNP Point # in its own record."
+# 
+# If not mapped will be last three digits of SCADA Key
+# 
+# 6  =  pRTU:   Field:   IP 
+# 
+# RG 2/11: Search IP column in the IP of RTAC SCADA DNP IPs Reordered.xlsx and point to the record of that RTU. 
+# 
+# Should be middle three digits of SCADA Key
+# 
+
+# In[22]:
 
 
+sin_uso= """
+import pandas as pd
 
+
+equivalency_station = pd.read_csv('Equivalency_station.csv')
+
+RtuControl = pd.DataFrame(index=equivalency_station.index)
+
+
+RtuControl['KeySCADA'] = equivalency_station.apply(lambda row: row['Full Point Name'] + ' ' + row['Description'] if row['Point Type'] == 'RELAY' else '', axis=1)
+"""
+
+
+# In[2]:
+
+
+sin_uso ="""
+import pandas as pd
+
+# Suponiendo que ya tienes el DataFrame RtuControl creado
+# Cargamos el archivo CSV 'SOURCE_status.csv'
+source_status = pd.read_csv('SOURCE_status.csv')
+
+# Inicializamos la columna 'Key2' en RtuControl con valores NaN o vacíos
+RtuControl['Key2'] = pd.NA
+
+# Contadores para las coincidencias buscadas y encontradas
+buscados = 0
+encontrados = 0
+
+# Iteramos sobre RtuControl para buscar cada valor de 'KeySCADA' en 'SOURCE_status.csv'
+for index, row in RtuControl.iterrows():
+    if pd.notna(row['KeySCADA']): # Si 'KeySCADA' tiene un valor (no está en blanco)
+        buscados += 1
+        # Buscamos el valor en 'SOURCE_status.csv'
+        match = source_status[source_status['Name'] == row['KeySCADA']]
+        if not match.empty: # Si encontramos una coincidencia
+            encontrados += 1
+            # Actualizamos el valor de 'Key2' en RtuControl con el valor de 'Key' encontrado
+            RtuControl.at[index, 'Key2'] = match['Key'].values[0]
+
+# Imprimimos los resultados
+print(f"Items buscados: {buscados}")
+print(f"Items encontrados: {encontrados}")
+"""
+
+
+# # RTU Equivalency STATION & Status_Xref 
+
+# In[12]:
+
+
+import pandas as pd
+
+df1 = pd.read_csv('equivalency_station.csv')
+df2 = pd.read_csv('status_xref.csv') 
+
+df1 = df1[['Station', 'Point']]
+df1['combined'] = df1['Station'] + ',' + df1['Point'] + '  '
+
+results = []
+matches = 0
+for val in df1['combined']:
+    match = df2['Name_Status_Source  '].str.contains(val)
+    if match.any():
+        key = df2[match]['Key'].iloc[0]
+        results.append({'equivalency_station_point': val, 'Key': key})
+        matches += 1
+
+df = pd.DataFrame(results)
+
+print(f"Number of matches: {matches}") 
+print(df)
 
