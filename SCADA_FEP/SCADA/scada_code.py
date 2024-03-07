@@ -390,16 +390,17 @@ df_status['OrderNo'] = range(1, len(status_df)+1)
 status_df['PreSuffx  '] = status_df['PreSuffx  '].astype(str).str.strip()
 
 #### conditions ###
-cond1 = (status_df['Open_B  '] == '12  ')
-cond2 = (status_df['Telem_A  '].replace('  ', np.nan).notna())
-cond3 = status_df['PreSuffx  '].str.contains('7')
-cond4 = status_df['PreSuffx  '].str.contains('20') & status_df['Desc  '].str.contains('LTC|REG')
-cond5 = (status_df['Open_A  '] != '  ') & (status_df['Close_A  '] != '  ')
+cond1 = status_df['PreSuffx  '].str.contains('20') & status_df['Desc  '].str.contains('LTC|REG')
+cond2 = (status_df['PreSuffx  '] == '7')
+cond3 = (status_df['Open_A  '] != '  ') & (status_df['Close_A  '] != '  ')
+cond4 = (status_df['Open_B  '] == '12')
+cond5 = (status_df['Telem_A  '].replace('  ', np.nan).notna())
+cond6 = np.bitwise_not(status_df['Telem_A  '].replace('  ', np.nan).notna()) 
 
 
 ## values 
-conditions = [cond5, cond1, cond4, cond3, cond2]
-values = [2, 2, 3, 6, 1]
+conditions = [cond1, cond2, cond3, cond4, cond5, cond6]
+values = [3, 6, 2, 2, 1, 5]
 #conditions.append(cond5)  
 #values.append(2)
 
