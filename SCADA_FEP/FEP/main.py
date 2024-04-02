@@ -22,7 +22,7 @@
 #  
 # ipdaddress  17      mapping:  192.168.32.16   (create only one record)
 
-# In[65]:
+# In[46]:
 
 
 import pandas as pd
@@ -30,7 +30,7 @@ from datetime import datetime
 #libraries
 
 
-# In[66]:
+# In[47]:
 
 
 data = {
@@ -47,7 +47,7 @@ FEP = pd.DataFrame(data)
 print('Preview \n',FEP)
 
 
-# In[67]:
+# In[48]:
 
 
 with open('FEP.DAT', 'w') as file:
@@ -104,7 +104,7 @@ with open('FEP.DAT', 'w') as file:
 
 # _Comm.csv_ Should be in the same folder
 
-# In[68]:
+# In[49]:
 
 
 rtac_data = pd.read_csv('RTAC SCADA DNP IPs Reordered (1).csv')
@@ -136,7 +136,7 @@ channel['ChannelConnTimeout'] = [5] * len(rtac_data)
 
 
 
-# In[69]:
+# In[50]:
 
 
 channel
@@ -146,7 +146,7 @@ channel
 
 # SE LE INCORPORA UNA COLUMNA CON VALORES '1' A CONTINUACION DE LA COLUMNA INDICE
 
-# In[70]:
+# In[51]:
 
 
 #line_number = 1
@@ -199,13 +199,13 @@ with open("CHANNEL.dat", 'w') as f:
 
 # RTU.csv should be in the same folder
 
-# In[71]:
+# In[52]:
 
 
 rtu_data = pd.read_csv('RTAC SCADA DNP IPs Reordered (1).csv')
 
 
-# In[72]:
+# In[53]:
 
 
 df = pd.DataFrame()
@@ -223,7 +223,7 @@ df['Address'] = [1] * len(rtu_data)
 df['SubType'] = [2] * len(rtu_data)
 
 
-# In[73]:
+# In[54]:
 
 
 df
@@ -233,7 +233,7 @@ df
 
 # Se incorpora una columna de '1s' siguiente al indice . 
 
-# In[74]:
+# In[55]:
 
 
 with open("RTU_DATA.dat", 'w') as f:
@@ -293,7 +293,7 @@ with open("RTU_DATA.dat", 'w') as f:
 # 
 # 
 
-# In[75]:
+# In[56]:
 
 
 rtac_data = pd.read_csv('RTAC SCADA DNP IPs Reordered (1).csv')
@@ -321,7 +321,7 @@ channel_group['pAORGroup'] = [1] * len(rtac_data)
 channel_group['Type'] = [5] * len(rtac_data)
 
 
-# In[76]:
+# In[57]:
 
 
 channel_group
@@ -329,7 +329,7 @@ channel_group
 
 # Columna siguiente a Indice agregada: 1s. Valores unicamente int 1
 
-# In[77]:
+# In[58]:
 
 
 with open("CHANNEL_GROUP.dat", 'w') as f:
@@ -361,6 +361,10 @@ with open("CHANNEL_GROUP.dat", 'w') as f:
 # PointType 1,0 : Set to 1
 # 
 # Start 3,0 : Set to 1
+# RG 3/11: For each RTAC (each RTAC has a unique IP address) search for the smallest "DNP Point"(all_stations_equivalency.csv) of the Point Type == Status and use that number.
+# If an RTAC has the following DNP Point # (9,10,45,59,70) then set start to 9
+#    
+# 
 # 
 # Count 4,0 : Set to 5
 # 
@@ -373,32 +377,149 @@ with open("CHANNEL_GROUP.dat", 'w') as f:
 # 
 # 
 
-# In[78]:
+# In[59]:
 
 
+import pandas as pd
+
+# Cargar los archivos CSV
 rtu_data = pd.read_csv('RTAC SCADA DNP IPs Reordered (1).csv')
+all_stations_equivalency = pd.read_csv('all_stations_equivalency.csv')
 rtu_defn = pd.DataFrame()
-
-
-# In[79]:
-
-
 rtu_defn['Indics'] = range(1, len(rtu_data) + 1)
 rtu_defn['PointType10'] = [1] * len(rtu_data)
-rtu_defn['Start30'] = [1] * len(rtu_data)
-rtu_defn['Count40'] = [5] * len(rtu_data)
+
+
+# In[60]:
+
+
+rtu_defn['Start30'] = ''
+rtu_defn['Count40'] = ''
+
+encontrados = 0
+no_encontrados = 0
+
+for index, row in rtu_data.iterrows():
+    rtac_scada_ip = row['RTAC SCADA IP']
+    
+    filtered_stations = all_stations_equivalency[(all_stations_equivalency['IP Address'] == rtac_scada_ip) & 
+                                                 (all_stations_equivalency['Type'] == 'STATUS')]
+    
+    if not filtered_stations.empty:
+        valid_dnp_points = filtered_stations['DNP Point'].dropna()
+        valid_dnp_points = valid_dnp_points[valid_dnp_points != 0]
+        valid_dnp_points = valid_dnp_points[valid_dnp_points != '']
+        
+        if not valid_dnp_points.empty:
+            min_dnp_point = valid_dnp_points.min()
+            max_dnp_point = valid_dnp_points.max()
+            
+            rtu_defn.at[index, 'Start30'] = int(min_dnp_point)
+            rtu_defn.at[index, 'Count40'] = int(max_dnp_point) - int(min_dnp_point) + 1
+            
+            encontrados += 1
+        else:
+            rtu_defn.at[index, 'Start30'] = ''
+            rtu_defn.at[index, 'Count40'] = ''
+            no_encontrados += 1
+    else:
+        rtu_defn.at[index, 'Start30'] = ''
+        rtu_defn.at[index, 'Count40'] = ''
+        no_encontrados += 1
+
+rtu_defn['Start30'] = rtu_defn['Start30'].replace('', 771771771)
+rtu_defn['Start30'] = rtu_defn['Start30'].astype(int)
+rtu_defn['Start30'] = rtu_defn['Start30'].replace(771771771,'')
+
+rtu_defn['Count40'] = rtu_defn['Count40'].replace('', 771771771)
+rtu_defn['Count40'] = rtu_defn['Count40'].astype(int)
+rtu_defn['Count40'] = rtu_defn['Count40'].replace(771771771,'')
+
+print(f"Valores encontrados: {encontrados}")
+print(f"Valores no encontrados: {no_encontrados}")
+
+
+# In[61]:
+
+
 rtu_defn['PointType11'] = [4] * len(rtu_data)
-rtu_defn['Start31'] = [1] * len(rtu_data)
-rtu_defn['Count41'] = [5] * len(rtu_data)
 
 
-# In[80]:
+# In[62]:
+
+
+rtu_defn['Start31'] = ''
+rtu_defn['Count41'] = ''
+
+encontrados_start31 = 0
+no_encontrados_start31 = 0
+encontrados_count41 = 0
+no_encontrados_count41 = 0
+
+for index, row in rtu_data.iterrows():
+    rtac_scada_ip = row['RTAC SCADA IP']
+    
+    filtered_stations = all_stations_equivalency[(all_stations_equivalency['IP Address'] == rtac_scada_ip) & 
+                                                 (all_stations_equivalency['Type'] == 'ANALOG')]
+    
+    if not filtered_stations.empty:
+        valid_dnp_points = filtered_stations['DNP Point'].dropna()
+        valid_dnp_points = valid_dnp_points[valid_dnp_points != 0]
+        valid_dnp_points = valid_dnp_points[valid_dnp_points != '']
+        
+        if not valid_dnp_points.empty:
+            min_dnp_point = valid_dnp_points.min()
+            max_dnp_point = valid_dnp_points.max()
+            
+            rtu_defn.at[index, 'Start31'] = int(min_dnp_point)
+            rtu_defn.at[index, 'Count41'] = int(max_dnp_point) - int(min_dnp_point) + 1
+            
+            encontrados_start31 += 1
+            encontrados_count41 += 1
+        else:
+            rtu_defn.at[index, 'Start31'] = ''
+            rtu_defn.at[index, 'Count41'] = ''
+            no_encontrados_start31 += 1
+            no_encontrados_count41 += 1
+    else:
+        rtu_defn.at[index, 'Start31'] = ''
+        rtu_defn.at[index, 'Count41'] = ''
+        no_encontrados_start31 += 1
+        no_encontrados_count41 += 1
+
+rtu_defn['Start31'] = rtu_defn['Start31'].replace('', 771771771)
+rtu_defn['Start31'] = rtu_defn['Start31'].astype(int)
+rtu_defn['Start31'] = rtu_defn['Start31'].replace(771771771,'')
+
+rtu_defn['Count41'] = rtu_defn['Count41'].replace('', 771771771)
+rtu_defn['Count41'] = rtu_defn['Count41'].astype(int)
+rtu_defn['Count41'] = rtu_defn['Count41'].replace(771771771,'')
+
+print(f"Valores encontrados : {encontrados_start31}")
+print(f"Valores no encontrados : {no_encontrados_start31}")
+#print(f"Valores encontrados para Count41: {encontrados_count41}")
+#print(f"Valores no encontrados para Count41: {no_encontrados_count41}")
+
+
+# In[63]:
 
 
 rtu_defn
 
 
-# In[81]:
+# In[64]:
+
+
+rtu_defn = rtu_defn.astype(str).replace('', '""')
+
+
+# In[65]:
+
+
+rtu_defn.to_csv("borrarrtudefn.csv", index=False)
+
+
+# In[66]:
 
 
 with open("RTU_DEFN.dat", 'w') as f:
@@ -416,6 +537,123 @@ with open("RTU_DEFN.dat", 'w') as f:
 
     f.write(" 0") 
 
+
+# # SCAN_DATA OBJECT
+
+# cargando y tratando los datos en type status 
+
+# dependencies
+# 
+# status xref
+# 
+# rtac scada
+# 
+# 
+# allstation equivalency
+# 
+
+# In[67]:
+
+
+import pandas as pd
+
+
+rtu_data = pd.read_csv('RTAC SCADA DNP IPs Reordered (1).csv')
+all_stations_equivalency = pd.read_csv('all_stations_equivalency.csv')
+all_stations_equivalency = all_stations_equivalency[all_stations_equivalency['Type'].isin(['STATUS', 'ANALOG'])]
+
+all_stations_equivalency = all_stations_equivalency[all_stations_equivalency['DNP Point'].notna()]
+all_stations_equivalency = all_stations_equivalency[all_stations_equivalency['DNP Point'].astype(str) != '']
+
+all_stations_equivalency['DNP Point'] = all_stations_equivalency['DNP Point'].astype(int)
+
+ip_addresses = rtu_data['RTAC SCADA IP'].unique()
+scan_data = all_stations_equivalency[all_stations_equivalency['IP Address'].isin(ip_addresses)]
+
+scan_data['Order'] = scan_data['Type'].map({'STATUS': 0, 'ANALOG': 1})
+
+scan_data = scan_data.sort_values(['IP Address', 'Order', 'DNP Point'])
+
+scan_data = scan_data.reset_index(drop=True)
+
+scan_data['SCAN_DATA_Record'] = 0
+
+last_scan_data_record = {}
+last_point_type = {}
+
+for index, row in scan_data.iterrows():
+    ip_address = row['IP Address']
+    point_type = row['Type']
+    dnp_point = row['DNP Point']
+    if point_type == 'STATUS':
+  
+        scan_data.at[index, 'SCAN_DATA_Record'] = dnp_point + 1
+        last_scan_data_record[ip_address] = scan_data.at[index, 'SCAN_DATA_Record']
+    else:
+   
+        if ip_address not in last_point_type or last_point_type[ip_address] != 'ANALOG':
+ 
+            scan_data.at[index, 'SCAN_DATA_Record'] = last_scan_data_record[ip_address] + 1
+        else:
+       
+            prev_index = index - 1
+            prev_dnp_point = scan_data.at[prev_index, 'DNP Point']
+            diff = dnp_point - prev_dnp_point
+            scan_data.at[index, 'SCAN_DATA_Record'] = last_scan_data_record[ip_address] + diff
+
+        last_scan_data_record[ip_address] = scan_data.at[index, 'SCAN_DATA_Record']
+
+    last_point_type[ip_address] = point_type
+
+scan_data = scan_data.drop('Order', axis=1)
+
+
+# In[68]:
+
+
+status_xref = pd.read_csv('status_xref.csv')
+
+# Función para buscar el valor en status_xref y obtener la clave correspondiente
+def get_destination_key(row):
+    search_value = f"{row['Station']},{row['Pnuemonic']}"
+    match = status_xref[status_xref['Name_Status_Source  '].str.strip() == search_value.strip()]
+    if not match.empty:
+        return match['Key'].iloc[0]
+    else:
+        print(f"No se encontró el valor {search_value} en status_xref")
+        return None
+
+# Aplicar la función a cada fila de scan_data para obtener la Destination_key
+scan_data['Destination_key'] = scan_data.apply(get_destination_key, axis=1)
+
+# Mostrar el resultado
+print("Scan Data con Destination_key:")
+print(scan_data.head())
+
+
+# 
+
+# # OUTPUT SCAN DATA
+
+# In[69]:
+
+
+with open("SCAN_DATA.dat", 'w') as f:
+    f.write('32 FEP.DB\n')
+    f.write('* \n')
+    f.write('\t10\tSCAN_DATA\t0\t14\t50\n')
+    f.write('*\tSCAN_DATA_Record\t1s\tDestinationKey\tName\n')
+
+    for index, row in scan_data.iterrows():
+        f.write('\t{}\t{}\t{}\t"{}"\n'.format(
+                row['SCAN_DATA_Record'], "1", row['Destination_key'], row['Description']))
+    
+
+    f.write(" 0\n")
+    f.write(" 0") 
+
+
+# _____________
 
 # # CHANNEL_GROUP_DEFN
 
@@ -435,7 +673,7 @@ with open("RTU_DEFN.dat", 'w') as f:
 # 
 # 
 
-# In[82]:
+# In[70]:
 
 
 rtac_data = pd.read_csv('RTAC SCADA DNP IPs Reordered (1).csv')
@@ -451,7 +689,7 @@ channel_group_defn['MaxApdu'] = [23] * len(rtac_data)
 channel_group_defn['MasterAddr'] = [1024] * len(rtac_data)
 
 
-# In[83]:
+# In[71]:
 
 
 with open("CHANNEL_GROUP_DEFN.dat", 'w') as f:
@@ -476,9 +714,14 @@ with open("CHANNEL_GROUP_DEFN.dat", 'w') as f:
 # 
 # 1  =  KeySCADA: 
 # 
-# RG 2/11: If ( Point Type == RELAY) then merge column Name+ ',' + Description , and then search for it in the output file SCADA.dat object Status. Grab the key of the matching record
+# ####=!RG 2/11: If ( Point Type == RELAY) then merge column Name+ ',' + Description , and then ####search for it in the output file SCADA.dat object Status. Grab the key of the matching #####record
 # 
-# Create for every Status = Types 2,3,6,7 and Setpoint = Type 1
+# # update
+# 
+# RG 3/24: If ( Point Type == RELAY) then merge column Station+ ',' + Point, and then search for it in the status_xref and grab the key of the matching record.
+# 
+# 
+# 
 # 
 # 2  =  control_type:  Field: "IP
 # DNP Point #"
@@ -502,10 +745,94 @@ with open("CHANNEL_GROUP_DEFN.dat", 'w') as f:
 # 
 # Should be middle three digits of SCADA Key
 # 
+# 
+# 43 = Name   Field : Description.  between : ""
+# 
 
-# In[84]:
+# 
+
+# __________
+
+# # OMITIR ESTO ENTRE SEPADRADORES
+
+# In[72]:
 
 
+#equivalency_station = pd.read_csv('Equivalency_station.csv')
+
+
+# In[73]:
+
+
+#equivalency_station = equivalency_station.drop(columns=['Point.1'])
+
+
+# In[74]:
+
+
+#equivalency_station
+
+
+# In[75]:
+
+
+#RtuControl = pd.DataFrame(index=equivalency_station.index)
+
+
+#RtuControl['KeySCADA'] = equivalency_station.apply(lambda row: row['Station'] + ',' + row['Point'] if row['Point Type'] == 'RELAY' else '', axis=1)
+
+
+# In[76]:
+
+
+#RtuControl
+
+
+# In[77]:
+
+
+#source_status = pd.read_csv('status_xref.csv')
+
+
+#RtuControl['Key2'] = pd.NA
+
+
+#buscados = 0
+#encontrados = 0
+
+
+#for index, row in RtuControl.iterrows():
+ #   if pd.notna(row['KeySCADA']) and row['KeySCADA'] != '': 
+  #      buscados += 1
+   
+  #      match = source_status[source_status['Name_Status_Source  '].str.contains(row['KeySCADA'])]
+  #      if not match.empty: 
+  #          encontrados += 1
+  #          
+  #          RtuControl.at[index, 'Key2'] = match['Key'].values[0]
+
+#print(f"Items buscados: {buscados}")
+#print(f"Items encontrados: {encontrados}")
+
+
+# In[78]:
+
+
+#RtuControl = RtuControl.rename(columns={'KeySCADA': 'equivalency_station_point'})
+
+
+# In[79]:
+
+
+#RtuControl = RtuControl.rename(columns={'Key2': 'Key'})
+
+
+# _________
+
+# In[80]:
+
+
+comentado = """
 import pandas as pd
 
 
@@ -515,21 +842,13 @@ RtuControl = pd.DataFrame(index=equivalency_station.index)
 
 
 RtuControl['KeySCADA'] = equivalency_station.apply(lambda row: row['Full Point Name'] + ' ' + row['Description'] if row['Point Type'] == 'RELAY' else '', axis=1)
+"""
 
 
-# In[85]:
+# In[81]:
 
 
-RtuControl
-
-
-# In[86]:
-
-
-import pandas as pd
-
-
-
+comentado = """
 source_status = pd.read_csv('status_xref.csv')
 
 
@@ -552,12 +871,13 @@ for index, row in RtuControl.iterrows():
 
 print(f"Items buscados: {buscados}")
 print(f"Items encontrados: {encontrados}")
+"""
 
 
-# In[87]:
+# In[82]:
 
 
-import pandas as pd
+comentado = """
 
 df1 = pd.read_csv('equivalency_station.csv')
 df2 = pd.read_csv('status_xref.csv') 
@@ -577,16 +897,19 @@ for val in df1['combined']:
 df = pd.DataFrame(results)
 
 print(f"Number of matches: {matches}") 
-print(df)
+print(df) 
+"""
 
 
-# In[103]:
+# In[83]:
 
 
-df1 = pd.read_csv('equivalency_station.csv')
+draft = """df1 = pd.read_csv('equivalency_station.csv')
+df1 = df1[df1['Point Type'] == 'RELAY']
+
 df2 = pd.read_csv('status_xref.csv')
 
-df1 = df1[['Station', 'Point', 'IP', 'DNP Point #']]
+df1 = df1[['Station', 'Point', 'IP', 'DNP Point #', 'Description']]
 df1['combined'] = df1['Station'] + ',' + df1['Point'] + '  '
 
 results = []
@@ -599,15 +922,16 @@ for val in df1['combined']:
         matches += 1
 
 df_matches = pd.DataFrame(results)
+df_matches['Description'] = df_matches['equivalency_station_point'].apply(lambda x: df1[df1['combined'] == x]['Description'].iloc[0])
 print(f"Number of matches: {matches}")
 
 
 rtac_scada_ips = pd.read_csv('RTAC SCADA DNP IPs Reordered (1).csv')
 
 #  control_type
-df_matches['control_type'] = 6
+#df_matches['control_type'] = 6
 df_matches.loc[df_matches.duplicated(subset=['IP', 'DNP Point #'], keep=False), 'control_type'] = df_matches[df_matches.duplicated(subset=['IP', 'DNP Point #'], keep=False)].groupby(['IP', 'DNP Point #']).cumcount() + 4
-
+df_matches['control_type'] = df_matches['control_type'].fillna(6)
 #  point_address
 df_matches['point_address'] = df_matches['DNP Point #']
 
@@ -615,7 +939,12 @@ df_matches['point_address'] = df_matches['DNP Point #']
 df_matches['pRTU'] = df_matches['IP'].apply(lambda x: rtac_scada_ips[rtac_scada_ips['RTAC SCADA IP'] == x]['RTAC Number'].iloc[0] if not rtac_scada_ips[rtac_scada_ips['RTAC SCADA IP'] == x].empty else '')
 
 
-result_df = df_matches[['Key', 'control_type', 'point_address', 'pRTU']]
+result_df = df_matches[['Key', 'control_type', 'point_address', 'pRTU', 'Description']]
+result_df['Description'] = '"' + result_df['Description'] + '"'
+
+
+
+#result_df = df_matches[['Key', 'control_type', 'point_address', 'pRTU']]
 
 
 result_df = result_df.fillna(777)
@@ -629,10 +958,56 @@ result_df['control_format'] = 1
 
 result_df = result_df.replace(777, '')
 
+print(result_df)"""
+
+
+# In[84]:
+
+
+df1 = pd.read_csv('equivalency_station.csv')
+df1 = df1[df1['Point Type'] == 'RELAY']
+df2 = pd.read_csv('status_xref.csv')
+df1 = df1[['Station', 'Point', 'IP', 'DNP Point #', 'Description']]
+df1['combined'] = df1['Station'] + ',' + df1['Point'] + ' '
+
+results = []
+matches = 0
+for val in df1['combined']:
+    match = df2['Name_Status_Source  '].str.contains(val)
+    if match.any():
+        key = df2[match]['Key'].iloc[0]
+        results.append({'equivalency_station_point': val, 'Key': key, 'IP': df1[df1['combined'] == val]['IP'].iloc[0], 'DNP Point #': df1[df1['combined'] == val]['DNP Point #'].iloc[0]})
+        matches += 1
+
+df_matches = pd.DataFrame(results)
+df_matches['Description'] = df_matches['equivalency_station_point'].apply(lambda x: df1[df1['combined'] == x]['Description'].iloc[0])
+print(f"Number of matches: {matches}")
+
+rtac_scada_ips = pd.read_csv('RTAC SCADA DNP IPs Reordered (1).csv')
+
+#control_type
+#df_matches['control_type'] = 6
+df_matches.loc[df_matches.duplicated(subset=['IP', 'DNP Point #'], keep=False), 'control_type'] = df_matches[df_matches.duplicated(subset=['IP', 'DNP Point #'], keep=False)].groupby(['IP', 'DNP Point #']).cumcount() + 4
+df_matches['control_type'] = df_matches['control_type'].fillna(6)
+
+#point_address
+df_matches['point_address'] = df_matches['DNP Point #']
+
+#pRTU
+df_matches['pRTU'] = df_matches['IP'].apply(lambda x: rtac_scada_ips[rtac_scada_ips['RTAC SCADA IP'] == x]['RTAC Number'].iloc[0] if not rtac_scada_ips[rtac_scada_ips['RTAC SCADA IP'] == x].empty else '')
+
+result_df = df_matches[['Key', 'control_type', 'point_address', 'pRTU', 'Description']]
+result_df = result_df.fillna(777)
+result_df['control_type'] = result_df['control_type'].astype(int)
+result_df['point_address'] = result_df['point_address'].astype(int)
+result_df['pRTU'] = result_df['pRTU'].astype(int)
+result_df['control_format'] = 1
+result_df = result_df.replace(777, '')
+result_df['Description'] = '"' + result_df['Description'] + '"'
 print(result_df)
 
 
-# In[104]:
+# In[85]:
 
 
 import numpy as np
@@ -640,7 +1015,7 @@ index = np.arange(1,len(result_df)+1)
 result_df.insert(0, 'idx', index)
 
 
-# In[105]:
+# In[86]:
 
 
 result_df
@@ -648,13 +1023,13 @@ result_df
 
 # Numero de objeto RTU_CONTROL?
 
-# In[106]:
+# In[87]:
 
 
 rtu_object_number = 20
 
 
-# In[107]:
+# In[88]:
 
 
 with open("RTU_CONTROL.dat", 'w') as f:
@@ -669,6 +1044,8 @@ with open("RTU_CONTROL.dat", 'w') as f:
 
     f.write(" 0") 
 
+
+# ________
 
 # In[ ]:
 
