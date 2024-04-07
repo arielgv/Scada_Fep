@@ -7,32 +7,31 @@
 	4	VARS  
 	5	VOLTS  
 	6	PF  
-	7	KW  
-	8	DEG C  
-	9	HZ  
-	10	KVA  
-	11	TAP  
-	12	STAGE  
-	13	DEGREE  
-	14	DEG F  
-	15	MWATT  
-	16	THRESH  
-	17	MWATTS  
-	18	PERIOD  
-	19	KVOLTS  
-	20	TIME  
-	21	HOUR  
-	22	DAYS  
-	23	YEAR  
-	24	STEP  
-	25	KWH  
-	26	NUMBER  
-	27	CL  
-	28	DEMAND  
-	29	MW  
-	30	MWH  
-	31	PERCEN  
-	32	SHED  
-	33	VALUE  
-	34	%  
+	7	HZ  
+	8	KVA  
+	9	TAP  
+	10	KW  
+	11	STAGE  
+	12	DEGREE  
+	13	DEG F  
+	14	MWATT  
+	15	THRESH  
+	16	MWATTS  
+	17	PERIOD  
+	18	KVOLTS  
+	19	TIME  
+	20	HOUR  
+	21	DAYS  
+	22	YEAR  
+	23	STEP  
+	24	KWH  
+	25	NUMBER  
+	26	CL  
+	27	DEMAND  
+	28	MW  
+	29	MWH  
+	30	PERCEN  
+	31	SHED  
+	32	VALUE  
+	33	%  
 0

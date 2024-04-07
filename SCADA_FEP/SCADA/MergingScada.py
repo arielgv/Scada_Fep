@@ -31,7 +31,7 @@ compiled_content = '10 SCADA.DB\n' + compiled_content
 
 compiled_content += '0'
 
-final_file_name = 'SCADA_Finished_Fix22.dat'
+final_file_name = 'SCADA_Finished_Fix23.dat'
 with open(final_file_name, 'w') as final_file:
     final_file.write(compiled_content)
 
