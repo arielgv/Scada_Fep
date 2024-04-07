@@ -1,0 +1,10 @@
+*
+46	GLOBAL_SCAN_DEFN	0	1	2	3	4	5
+*	record	Indic	Protocol	name	ScanType	FuncCode	pGSG
+	1	1	8	"Class 0"	92	1	2
+	2	1	8	"Class 1"	93	1	2
+	3	1	8	"Class 2"	94	1	2
+	4	0	8	"Class 3"	95	1	2
+	5	0	8	"Internal Indications"	97	1	2
+0
+*
