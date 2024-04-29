@@ -1710,7 +1710,7 @@ statusfilename = os.path.join(folder_name, output_status_name)
 
 with open(statusfilename, 'w') as f:
     f.write('*\n')
-    f.write('\t4\tSTATUS\t0\t1\t3\t4\t5\t10\t19\t49\t29\t38\t41\t44\t51\t52\t73:3\t74\t107\n')
+    f.write('\t4\tSTATUS\t0\t1\t3\t4\t5\t10\t19\t49\t29\t38\t41\t44\t51\t52\t73,4\t74\t107\n')
     f.write('*\trecord\tOrderNo\tType\tKey\tName\tStn\tAOR\tpState\tNorm\tAlarmGroup\tFeedbackKey\tICAddress\tpCtrlState\tHiControlLimit\tLoControlLimit\tSetpoint_emulation\tpScale\tpDeviceInstance\n')
 
     for index, row in df_status.iterrows():
