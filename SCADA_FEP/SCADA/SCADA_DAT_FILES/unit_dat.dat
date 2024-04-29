@@ -1,0 +1,37 @@
+*
+	10	UNIT	0
+*	#	Name
+	1	AMPS  
+	2	MPH  
+	3	WATTS  
+	4	VARS  
+	5	VOLTS  
+	6	PF  
+	7	HZ  
+	8	KVA  
+	9	TAP  
+	10	KW  
+	11	STAGE  
+	12	DEGREE  
+	13	DEG F  
+	14	MWATT  
+	15	THRESH  
+	16	MWATTS  
+	17	PERIOD  
+	18	KVOLTS  
+	19	TIME  
+	20	HOUR  
+	21	DAYS  
+	22	YEAR  
+	23	STEP  
+	24	KWH  
+	25	NUMBER  
+	26	CL  
+	27	DEMAND  
+	28	MW  
+	29	MWH  
+	30	PERCEN  
+	31	SHED  
+	32	VALUE  
+	33	%  
+0
