@@ -22,14 +22,14 @@
 #  
 # ipdaddress  17      mapping:  192.168.32.16   (create only one record)
 
-# In[1]:
+# In[43]:
 
 
 import pandas as pd
 from datetime import datetime
 
 
-# In[2]:
+# In[44]:
 
 
 data = {
@@ -46,7 +46,7 @@ FEP = pd.DataFrame(data)
 print('Preview \n',FEP)
 
 
-# In[3]:
+# In[45]:
 
 
 with open('FEP.DAT', 'w') as file:
@@ -103,7 +103,7 @@ with open('FEP.DAT', 'w') as file:
 
 # _Comm.csv_ Should be in the same folder
 
-# In[4]:
+# In[46]:
 
 
 rtac_data = pd.read_csv('RTAC SCADA DNP IPs Reordered.csv')
@@ -135,7 +135,7 @@ channel['ChannelConnTimeout'] = [5] * len(rtac_data)
 
 
 
-# In[5]:
+# In[47]:
 
 
 channel
@@ -145,7 +145,7 @@ channel
 
 # SE LE INCORPORA UNA COLUMNA CON VALORES '1' A CONTINUACION DE LA COLUMNA INDICE
 
-# In[6]:
+# In[48]:
 
 
 with open("CHANNEL.dat", 'w') as f:
@@ -197,13 +197,13 @@ with open("CHANNEL.dat", 'w') as f:
 
 # RTU.csv should be in the same folder
 
-# In[7]:
+# In[49]:
 
 
 rtu_data = pd.read_csv('RTAC SCADA DNP IPs Reordered.csv')
 
 
-# In[8]:
+# In[50]:
 
 
 df = pd.DataFrame()
@@ -221,7 +221,7 @@ df['Address'] = [1] * len(rtu_data)
 df['SubType'] = [2] * len(rtu_data)
 
 
-# In[9]:
+# In[51]:
 
 
 df
@@ -231,7 +231,7 @@ df
 
 # Se incorpora una columna de '1s' siguiente al indice . 
 
-# In[10]:
+# In[52]:
 
 
 with open("RTU_DATA.dat", 'w') as f:
@@ -291,7 +291,7 @@ with open("RTU_DATA.dat", 'w') as f:
 # 
 # 
 
-# In[11]:
+# In[53]:
 
 
 rtac_data = pd.read_csv('RTAC SCADA DNP IPs Reordered.csv')
@@ -319,7 +319,7 @@ channel_group['pAORGroup'] = [1] * len(rtac_data)
 channel_group['Type'] = [5] * len(rtac_data)
 
 
-# In[12]:
+# In[54]:
 
 
 channel_group
@@ -327,7 +327,7 @@ channel_group
 
 # Columna siguiente a Indice agregada: 1s. Valores unicamente int 1
 
-# In[13]:
+# In[55]:
 
 
 with open("CHANNEL_GROUP.dat", 'w') as f:
@@ -378,7 +378,7 @@ with open("CHANNEL_GROUP.dat", 'w') as f:
 # 
 # 
 
-# In[14]:
+# In[56]:
 
 
 import pandas as pd
@@ -391,7 +391,7 @@ rtu_defn['Indics'] = range(1, len(rtu_data) + 1)
 rtu_defn['PointType10'] = [1] * len(rtu_data)
 
 
-# In[15]:
+# In[57]:
 
 
 rtu_defn['Start30'] = ''
@@ -440,13 +440,13 @@ rtu_defn['Count40'] = rtu_defn['Count40'].replace(771771771,'')
 #print(f"Valores no encontrados: {no_encontrados}")
 
 
-# In[16]:
+# In[58]:
 
 
 rtu_defn['PointType11'] = [4] * len(rtu_data)
 
 
-# In[17]:
+# In[59]:
 
 
 rtu_defn['Start31'] = ''
@@ -500,19 +500,19 @@ rtu_defn['Count41'] = rtu_defn['Count41'].replace(771771771,'')
 #print(f"Valores no encontrados : {no_encontrados_start31}")
 
 
-# In[18]:
+# In[60]:
 
 
 rtu_defn
 
 
-# In[19]:
+# In[61]:
 
 
 rtu_defn = rtu_defn.astype(str).replace('', '""')
 
 
-# In[20]:
+# In[62]:
 
 
 with open("RTU_DEFN.dat", 'w') as f:
@@ -563,7 +563,7 @@ with open("RTU_DEFN.dat", 'w') as f:
 
 # ### 'Record' Column
 
-# In[21]:
+# In[63]:
 
 
 import pandas as pd
@@ -584,7 +584,7 @@ Scan_Data_xref = pd.DataFrame({'record': range(1, total_records + 1)})
 print(f"Se crearon {total_records} records en Scan_Data_xref.")
 
 
-# In[22]:
+# In[64]:
 
 
 Scan_Data_xref
@@ -594,7 +594,7 @@ Scan_Data_xref
 
 # ### RTAC_Address
 
-# In[23]:
+# In[65]:
 
 
 import pandas as pd
@@ -637,7 +637,7 @@ Scan_Data_xref['record'] = range(1, len(Scan_Data_xref) + 1)
 
 # ### RTAC_Number
 
-# In[24]:
+# In[66]:
 
 
 rtu_defn_df = rtu_defn
@@ -665,7 +665,7 @@ for index, row in rtu_defn_df[numeric_rows].iterrows():
 
 # ### RTAC_Name , IP , and ABR
 
-# In[25]:
+# In[67]:
 
 
 rtac_scada_df = pd.read_csv('RTAC SCADA DNP IPs Reordered.csv')
@@ -682,7 +682,7 @@ Scan_Data_xref = Scan_Data_xref.drop('RTAC Number', axis=1)
 
 # ### NAME
 
-# In[26]:
+# In[68]:
 
 
 all_station_df = pd.read_csv('all_stations_equivalency.csv')
@@ -713,7 +713,7 @@ print(f"Number of matches found: {num_matches}")
 
 # 
 
-# In[27]:
+# In[69]:
 
 
 Scan_Data_xref['1s'] = 1
@@ -721,7 +721,7 @@ Scan_Data_xref['1s'] = 1
 
 # ### DNP POINT
 
-# In[28]:
+# In[70]:
 
 
 all_station_df = pd.read_csv('all_stations_equivalency.csv')
@@ -761,7 +761,7 @@ num_matches = (Scan_Data_xref['Name'] != 'none').sum()
 print(f"Number of matches found: {num_matches}")
 
 
-# In[29]:
+# In[71]:
 
 
 source_status_df = pd.read_csv('SOURCE_status.csv')
@@ -854,7 +854,7 @@ print(f"Number of matches found: {num_matches}")
 
 # # OUTPUT SCAN DATA - Not included in merge
 
-# In[30]:
+# In[72]:
 
 
 with open("SCAN_DATA XREF.dat", 'w') as f:
@@ -864,12 +864,18 @@ with open("SCAN_DATA XREF.dat", 'w') as f:
     f.write('*\tRecord\t1s\tRTAC_point_type\tRTAC_address\tRTAC_Number\tRTAC IP\tRTAC NAME\tRTAC Abr\tDNP Point Address\tName\tDestinationKey\n')
 
     for index, row in Scan_Data_xref.iterrows():
-        f.write('\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t"{}"\n'.format(
+        f.write('\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t"{}"\t{}\n'.format(
                 row['record'], "1", row['point_type'], row['RTAC_Address'],row['RTAC_Number'],row['RTAC IP'],row['RTAC NAME'], row['RTAC Abr'], row['DNP Point Address'], row['Name'], row['Destination Key']))
     
 
     f.write(" 0\n")
     f.write(" 0") 
+
+
+# In[73]:
+
+
+Scan_Data_xref.to_csv('Scan_Data_CSV.csv', index=False)
 
 
 # _____________
@@ -892,7 +898,7 @@ with open("SCAN_DATA XREF.dat", 'w') as f:
 # 
 # 
 
-# In[31]:
+# In[32]:
 
 
 rtac_data = pd.read_csv('RTAC SCADA DNP IPs Reordered.csv')
@@ -908,7 +914,7 @@ channel_group_defn['MaxApdu'] = [23] * len(rtac_data)
 channel_group_defn['MasterAddr'] = [1024] * len(rtac_data)
 
 
-# In[32]:
+# In[33]:
 
 
 with open("CHANNEL_GROUP_DEFN.dat", 'w') as f:
@@ -1009,7 +1015,7 @@ with open("CHANNEL_GROUP_DEFN.dat", 'w') as f:
 # 
 # 
 
-# In[33]:
+# In[34]:
 
 
 import pandas as pd
@@ -1078,7 +1084,7 @@ for _, row in relay_records.iterrows():
 print(rtu_control)
 
 
-# In[34]:
+# In[35]:
 
 
 draft_erase = """
@@ -1158,10 +1164,40 @@ result_df.insert(0, 'idx', index)
 print(result_df) """
 
 
-# In[35]:
+# In[36]:
 
 
 result_df = rtu_control
+
+
+# In[37]:
+
+
+result_df
+
+
+# In[38]:
+
+
+result_df.drop_duplicates(inplace=True)
+
+
+# In[39]:
+
+
+result_df
+
+
+# In[40]:
+
+
+result_df = result_df.sort_values(by=['pRTU', 'Name'])
+
+
+# In[41]:
+
+
+result_df
 
 
 # In[36]:
@@ -1192,7 +1228,7 @@ with open("RTU_CONTROL.dat", 'w') as f:
 
     for index, row in result_df.iterrows():
         f.write("\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(
-                row['idx'] ,row['KeySCADA'], row['control_type'], row['point_address']+1, row['pRTU'],row['control_format'],row['control_bit_params'],row['Name']))
+                row['idx'] ,row['KeySCADA'], row['control_type'], row['point_address'], row['pRTU'],row['control_format'],row['control_bit_params'],row['Name']))
     
 
     f.write(" 0") 
